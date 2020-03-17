@@ -61,6 +61,9 @@ export enum EscapeCode {
 	BG_BRIGHT_WHITE = 107,
 }
 
+export const PREFIX = '\u001b';
+export const BLINK = `${PREFIX}[${EscapeCode.BLINK}m`;
+
 export enum ForegroundColor {
 	BLACK = EscapeCode.FG_BLACK,
 	RED = EscapeCode.FG_RED,
@@ -242,7 +245,7 @@ export function parse(str: string): Array<string | EscapeCode> {
 	for(let i = 0; i < str.length; i++) {
 		const chr = str[i];
 
-		if(chr === '\u001b') {
+		if(chr === PREFIX) {
 			push();
 
 			ansi = '';
@@ -329,6 +332,8 @@ export function format(str: string): Array<JSX.Element> {
 
 				fgColor = bgColor;
 				bgColor = tmp;
+
+				classes.push('app-terminal--inverse');
 			}
 
 			if(state.invisible) {
@@ -336,10 +341,16 @@ export function format(str: string): Array<JSX.Element> {
 				bgColor = 'transparent';
 			}
 
-			if(fgColor !== 'reset') classes.push('app-terminal--fg-' + fgColor);
-			if(bgColor !== 'reset') classes.push('app-terminal--bg-' + bgColor);
+			if(fgColor !== 'reset' || state.inverse) classes.push('app-terminal--fg-' + fgColor);
+			if(bgColor !== 'reset' || state.inverse) classes.push('app-terminal--bg-' + bgColor);
 
-			elements.push(<span className={classes.join(' ')}>{piece}</span>);
+			const innerHTML = { __html: piece };
+			const element = <span
+				className={classes.join(' ')}
+				dangerouslySetInnerHTML={innerHTML}
+			></span>;
+
+			elements.push(element);
 		} else {
 			state = apply(state, piece);
 		}

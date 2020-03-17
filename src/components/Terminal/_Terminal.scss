@@ -24,33 +24,74 @@ $colors: (
 }
 
 .app-terminal {
-	@include color-modifiers;
-}
+	height: 100%;
+	font-size: 1rem;
 
-.app-terminal--bold {
-	font-weight: bold;
-}
+	.app-terminal__scroll-bar {
+		height: 100%;
+		overflow-x: hidden;
 
-.app-terminal--light {
-	font-weight: lighter;
-}
+		.simplebar-track.simplebar-vertical {
+			width: 14px;
+		}
 
-.app-terminal--underline {
-	text-decoration: underline;
-}
+		.simplebar-track.simplebar-horizontal {
+			height: 14px;
+		}
 
-.app-terminal--strike {
-	text-decoration: line-through;
-}
+		.simplebar-track .simplebar-scrollbar:before {
+			border-radius: 6px;
+			left: 4px;
+			right: 4px;
+			top: 4px;
+			bottom: 4px;
+			opacity: 0.4;
+		}
+	}
 
-.app-terminal--italic {
-	font-style: italic;
-}
+	.app-terminal__output {
+		padding: 0 12px 12px;
+	}
 
-.app-terminal--bg-reset {
-	background: $terminal-bg;
-}
+	.app-terminal {
+		@include color-modifiers;
+	}
 
-.app-terminal--fg-reset {
-	color: $terminal-fg;
+	.app-terminal--bold {
+		font-weight: bold;
+	}
+
+	.app-terminal--light {
+		font-weight: lighter;
+	}
+
+	.app-terminal--underline {
+		text-decoration: underline;
+	}
+
+	.app-terminal--strike {
+		text-decoration: line-through;
+	}
+
+	.app-terminal--italic {
+		font-style: italic;
+	}
+
+	.app-terminal--bg-reset {
+		background: $terminal-bg;
+	}
+
+	.app-terminal--fg-reset {
+		color: $terminal-fg;
+	}
+
+	.app-terminal--inverse {
+		&.app-terminal--bg-reset {
+			background: $terminal-fg;
+		}
+
+		&.app-terminal--fg-reset {
+			color: $terminal-bg;
+		}
+	}
 }
