@@ -3,8 +3,6 @@ import c from 'ansi-colors';
 
 import * as ANSI from '../../utils/ansi';
 
-(window as any).c = c;
-
 function Terminal(): JSX.Element {
 	return (
 		<div>
