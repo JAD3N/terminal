@@ -1,0 +1,52 @@
+$colors: (
+	red: $terminal-red,
+	green: $terminal-green,
+	blue: $terminal-blue,
+	magenta: $terminal-pink,
+	cyan: $terminal-cyan,
+	light-gray: $terminal-light-gray,
+	medium-gray: $terminal-medium-gray,
+	white: $terminal-white,
+	black: #000000,
+	transparent: transparent,
+);
+
+@mixin color-modifiers {
+	@each $name, $color in $colors {
+		&--fg-#{$name} {
+			color: #{$color};
+		}
+
+		&--bg-#{$name} {
+			background: #{$color};
+		}
+	}
+}
+
+.app-terminal {
+	@include color-modifiers;
+}
+
+.app-terminal--bold {
+	font-weight: bold;
+}
+
+.app-terminal--light {
+	font-weight: lighter;
+}
+
+.app-terminal--strike {
+	text-decoration: line-through;
+}
+
+.app-terminal--italic {
+	font-style: italic;
+}
+
+.app-terminal--bg-reset {
+	background: $terminal-bg;
+}
+
+.app-terminal--fg-reset {
+	color: $terminal-fg;
+}

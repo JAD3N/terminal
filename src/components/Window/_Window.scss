@@ -1,0 +1,87 @@
+.app-window {
+	display: flex;
+    flex-direction: column;
+	width: 90vw;
+	max-width: 900px;
+	height: 550px;
+	transition: all 0.15s;
+	background: $window-bg;
+	color: $window-fg;
+	border-radius: 6px;
+	box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30),
+				0 15px 12px rgba(0, 0, 0, 0.22);
+
+	.app-window__header {
+		position: relative;
+		padding: 0 12px;
+		height: 40px;
+		display: flex;
+		align-items: center;
+
+		.app-window__title {
+			display: block;
+			width: 100%;
+			text-align: center;
+			font-size: 0.75rem;
+			color: $window-title-color;
+		}
+
+		.app-window__controls {
+			position: absolute;
+			left: 12px;
+			display: flex;
+
+			.app-window__controls--green {
+				background-color: $window-control-green;
+			}
+
+			.app-window__controls--orange {
+				background-color: $window-control-orange;
+			}
+
+			.app-window__controls--red {
+				background-color: $window-control-red;
+			}
+
+			.app-window__controls-btn {
+				cursor: pointer;
+				outline: none;
+				border: none;
+				width: 12px;
+				height: 12px;
+				border-radius: 50%;
+				margin-right: 6px;
+			}
+		}
+	}
+
+	.app-window__body {
+		flex: 1;
+		overflow-y: auto;
+		padding: 0 12px 12px 12px;
+	}
+
+	&.app-window--fullscreen {
+		width: 100vw;
+		height: 100vh;
+		max-width: 100vw;
+		border-radius: 0;
+	}
+}
+
+@media only screen and (max-width: 600px), (max-height: 600px) {
+	.app-window {
+		width: 100vw;
+		height: 100vh;
+		max-width: 100vw;
+		border-radius: 0;
+	}
+
+	.app-window .app-window__body {
+		padding-top: 12px;
+	}
+
+	.app-window .app-window__header {
+		display: none;
+	}
+}
