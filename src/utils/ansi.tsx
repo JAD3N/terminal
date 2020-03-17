@@ -314,6 +314,7 @@ export function format(str: string): Array<JSX.Element> {
 
 			if(state.italic) classes.push('app-terminal--italic');
 			if(state.underline) classes.push('app-terminal--underline');
+			if(state.strike) classes.push('app-terminal--strike');
 
 			if(state.blink) {
 				if(state.blink === EscapeCode.RAPID_BLINK) {

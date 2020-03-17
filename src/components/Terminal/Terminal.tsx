@@ -8,7 +8,7 @@ import * as ANSI from '../../utils/ansi';
 function Terminal(): JSX.Element {
 	return (
 		<div>
-			{ANSI.format(c.inverse(c.red(c.bgBlue('test')) + c.italic(c.magenta(' this is a test'))))}
+			{ANSI.format(c.strikethrough('this is a test'))}
 		</div>
 	);
 }
