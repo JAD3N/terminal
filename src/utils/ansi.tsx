@@ -295,10 +295,15 @@ export interface State {
 	strike: boolean;
 }
 
-export function format(str: string): Array<JSX.Element> {
+export function format(str: string | null): Array<JSX.Element> {
+	if(str === null) {
+		return [];
+	}
+
 	const elements: Array<JSX.Element> = [];
 	const pieces = parse(str);
 	let state = getDefaultState();
+	let i = 0;
 
 	for(const piece of pieces) {
 		if(typeof piece === 'string') {
@@ -346,6 +351,7 @@ export function format(str: string): Array<JSX.Element> {
 
 			const innerHTML = { __html: piece };
 			const element = <span
+				key={i++}
 				className={classes.join(' ')}
 				dangerouslySetInnerHTML={innerHTML}
 			></span>;

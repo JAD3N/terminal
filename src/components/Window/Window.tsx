@@ -21,13 +21,13 @@ class Window extends React.Component<{}, WindowState> {
 	}
 
 	onClose(): void {
-		// TODO: Add prompt to confirm user wishes to do this.
-		window.close();
+		// go back because you can't close tabs
+		window.history.back();
 	}
 
 	onMinimize(): void {
 		// TODO: Add a better explanation.
-		alert('Sadly, I cannot do this!');
+		alert('This functionality is not supported.');
 	}
 
 	onFullscreen(): void {

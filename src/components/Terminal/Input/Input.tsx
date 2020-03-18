@@ -1,9 +1,11 @@
 import React from 'react';
+import c from 'ansi-colors';
 
 interface InputProps {
+	isError: boolean;
 	isFocused: boolean;
 	isLocked: boolean;
-	onExecute: (value: string) => void;
+	onExecute: (value: string, output: string) => void;
 }
 
 interface InputState {
@@ -89,7 +91,15 @@ class Input extends React.Component<InputProps, InputState> {
 					value = commandHistory[commandHistoryIndex = command.index];
 				}
 			} else if(key === 'Enter') {
-				this.props.onExecute(value);
+				let prefix = c.bold('→');
+
+				if(this.props.isError) {
+					prefix = c.red(prefix);
+				} else {
+					prefix = c.green(prefix);
+				}
+
+				this.props.onExecute(value, `${prefix} ${value}`);
 
 				if(value.length) {
 					commandHistory[0] = value;
@@ -124,10 +134,10 @@ class Input extends React.Component<InputProps, InputState> {
 
 	render(): JSX.Element {
 		return (
-			<div>
+			<div className="app-terminal__input">
 				<span className={[
 					'app-terminal--bold',
-					'app-terminal--fg-green',
+					this.props.isError ? 'app-terminal--fg-red' : 'app-terminal--fg-green',
 				].join(' ')}>&rarr;</span>
 				<span>&nbsp;</span>
 				<span ref={this.valueRef}>{this.state.value}</span>

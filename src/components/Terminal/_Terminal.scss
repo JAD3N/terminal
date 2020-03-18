@@ -26,6 +26,7 @@ $colors: (
 .app-terminal {
 	height: 100%;
 	font-size: 1rem;
+	line-height: 1.5rem;
 
 	.app-terminal__scroll-bar {
 		height: 100%;
@@ -51,6 +52,19 @@ $colors: (
 
 	.app-terminal__output {
 		padding: 0 12px 12px;
+		white-space: pre-wrap;
+		word-break: break-all;
+		font-size: 1rem;
+		line-height: 1.5rem;
+
+		span {
+			display: inline-block;
+		}
+
+		span,
+		div {
+			min-height: 1.5rem;
+		}
 	}
 
 	.app-terminal {
