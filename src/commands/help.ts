@@ -1,5 +1,5 @@
-function help(output: Array<string | null>): void {
-	output.push('Help is coming!');
-}
+import { CommandUtils } from './index';
 
-export default help;
+export function help(args: string, { printLine }: CommandUtils): void {
+	printLine(args.replace('\\\\n', '\n'));
+}

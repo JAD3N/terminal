@@ -1,9 +1,5 @@
-function echo(output: Array<string | null>, args: string): void {
-	const div = document.createElement('div');
-	div.innerText = args;
-	div.innerText.split('\\n').forEach(
-		(line: string) => output.push(line)
-	);
-}
+import { CommandUtils } from './index';
 
-export default echo;
+export function echo(args: string, { printLine }: CommandUtils): void {
+	printLine(args.replace('\\\\n', '\n'));
+}

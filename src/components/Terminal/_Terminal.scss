@@ -1,14 +1,21 @@
 $colors: (
+	transparent: transparent,
+	black: #000000,
 	red: $terminal-red,
 	green: $terminal-green,
+	yellow: #ffff00,
 	blue: $terminal-blue,
 	magenta: $terminal-pink,
 	cyan: $terminal-cyan,
-	light-gray: $terminal-light-gray,
-	medium-gray: $terminal-medium-gray,
 	white: $terminal-white,
-	black: #000000,
-	transparent: transparent,
+	bright-black: #000000,
+	bright-red: $terminal-red,
+	bright-green: $terminal-green,
+	bright-yellow: #ffff00,
+	bright-blue: $terminal-blue,
+	bright-magenta: $terminal-pink,
+	bright-cyan: $terminal-cyan,
+	bright-white: $terminal-white,
 );
 
 @mixin color-modifiers {
@@ -56,10 +63,6 @@ $colors: (
 		word-break: break-all;
 		font-size: 1rem;
 		line-height: 1.5rem;
-
-		span {
-			display: inline-block;
-		}
 
 		span,
 		div {

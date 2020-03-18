@@ -283,18 +283,6 @@ export function parse(str: string): Array<string | EscapeCode> {
 	return pieces;
 }
 
-export interface State {
-	fgColor: ForegroundColor;
-	bgColor: BackgroundColor;
-	weight: EscapeCode.BOLD | EscapeCode.FAINT | EscapeCode.NORMAL;
-	italic: boolean;
-	underline: boolean;
-	blink: EscapeCode.RAPID_BLINK | boolean;
-	inverse: boolean;
-	invisible: boolean;
-	strike: boolean;
-}
-
 export function format(str: string | null): Array<JSX.Element> {
 	if(str === null) {
 		return [];
@@ -305,8 +293,45 @@ export function format(str: string | null): Array<JSX.Element> {
 	let state = getDefaultState();
 	let i = 0;
 
+	const adjustedPieces = [];
+
 	for(const piece of pieces) {
 		if(typeof piece === 'string') {
+			if(!piece.length) {
+				continue;
+			}
+
+			if(piece.includes('\n')) {
+				const newLinePieces = piece.split('\n');
+
+				for(let i = 0; i < newLinePieces.length; i++) {
+					const newLinePiece = newLinePieces[i];
+
+					// check to make sure has length
+					if(newLinePiece.length) {
+						adjustedPieces.push(newLinePiece);
+					}
+
+					// skip last
+					if(i !== newLinePieces.length - 1) {
+						adjustedPieces.push('\n');
+					}
+				}
+
+				continue;
+			}
+		}
+
+		adjustedPieces.push(piece);
+	}
+
+	for(const piece of adjustedPieces) {
+		if(typeof piece === 'string') {
+			if(piece === '\n') {
+				elements.push(<br key={i++}/>);
+				continue;
+			}
+
 			const classes: Array<string> = [];
 
 			let fgColor = getColorName(state.fgColor) || 'reset';

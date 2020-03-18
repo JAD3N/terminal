@@ -8,64 +8,130 @@ import escape from '../../utils/escape';
 import commands from '../../commands';
 
 interface TerminalState {
-	isError: boolean;
-	output: Array<string | null>;
+	scrolling: boolean;
+	output: Array<string>;
 }
+
+const PREFIX = '\n→';
 
 class Terminal extends React.Component<{}, TerminalState> {
 	outputRef: React.RefObject<HTMLDivElement>;
+	scrollableRef: React.RefObject<Element>;
 
 	interval: number;
 	isVisible: boolean;
+	isLocked: boolean;
+	listeners: Array<(str: string) => void>;
 
 	constructor(props: {}) {
 		super(props);
 
 		this.state = {
-			isError: false,
+			scrolling: false,
 			output: [],
 		};
 
+		// do after assigning state
+		this.state.output.push(this.getPrefix());
+
 		this.outputRef = React.createRef();
+		this.scrollableRef = React.createRef();
 
 		this.interval = -1;
 		this.isVisible = true;
+		this.isLocked = false;
+		this.listeners = [];
 
-		this.onExecute = this.onExecute.bind(this);
+		this.clear = this.clear.bind(this);
+		this.print = this.print.bind(this);
+		this.printLine = this.printLine.bind(this);
+		this.readLine = this.readLine.bind(this);
+
+		this.execute = this.execute.bind(this);
+		this.scrollToBottom = this.scrollToBottom.bind(this);
 	}
 
-	onExecute(value: string, line: string): void {
-		const output: Array<string | null> = [ ...this.state.output, line ];
-		let isError = true;
+	getPrefix(error = false): string {
+		const prefix = c.bold(error ? c.red(PREFIX) : c.green(PREFIX));
+		return `${prefix} `;
+	}
 
-		if(value.length) {
-			value = value.trim();
+	clear(): void {
+		this.setState({ output: [ ] });
+	}
 
-			const spaceIndex = value.indexOf(' ');
-			let command, args;
+	print(...strArr: Array<string>): void {
+		let scrolling = false;
 
-			if(spaceIndex > -1) {
-				command = value.substring(0, spaceIndex).toLowerCase();
-				args = value.substring(spaceIndex + 1);
-			} else {
-				command = value.toLowerCase();
-				args = '';
-			}
-
-			console.log(`command: ${command} args: ${args}`);
-
-			if(command in commands) {
-				const exitStatus = commands[command](output, args);
-				isError = exitStatus === false;
-			} else {
-				output.push(c.bold.red(`Command not found: ${command}`));
-			}
+		if(this.scrollableRef.current) {
+			const el = this.scrollableRef.current;
+			scrolling = el.scrollHeight - el.scrollTop !== el.clientHeight;
 		}
 
-		// add new line after
-		output.push(null);
+		this.setState({ scrolling, output: [
+			...this.state.output,
+			...strArr,
+		] });
+	}
 
-		this.setState({ output, isError });
+	printLine(...strArr: Array<string>): void {
+		this.print(...strArr.map((str: string) => str + '\n'));
+	}
+
+	readLine(): Promise<string> {
+		return new Promise<string>((resolve: (str: string) => void) => this.listeners.push(resolve));
+	}
+
+	async execute(value: string): Promise<void> {
+		this.printLine(value);
+
+		this.listeners.forEach((callback: (str: string) => void) => callback(value));
+		this.listeners = [];
+
+		if(!this.isLocked) {
+			let error = true;
+
+			// prevent input from calling command
+			this.isLocked = true;
+
+			if(value.length) {
+				value = value.trim();
+
+				const spaceIndex = value.indexOf(' ');
+				let command, args;
+
+				if(spaceIndex > -1) {
+					command = value.substring(0, spaceIndex).toLowerCase();
+					args = value.substring(spaceIndex + 1);
+				} else {
+					command = value.toLowerCase();
+					args = '';
+				}
+
+				if(command in commands) {
+					const exitStatus = await commands[command](args, {
+						clear: this.clear,
+						print: this.print,
+						printLine: this.printLine,
+						readLine: this.readLine,
+					});
+
+					error = exitStatus === false;
+				} else {
+					this.printLine(c.bold.red(`Command not found: ${command}`));
+				}
+			}
+
+			this.isLocked = false;
+			this.print(this.getPrefix(error));
+		}
+	}
+
+	scrollToBottom(): void {
+		const el = this.scrollableRef.current;
+		if(el) {
+			el.scrollTop = el.scrollHeight;
+		}
 	}
 
 	componentDidMount(): void {
@@ -87,6 +153,14 @@ class Terminal extends React.Component<{}, TerminalState> {
 				this.isVisible = !this.isVisible;
 			}
 		}, 600);
+
+		setTimeout(() => this.execute('neofetch'), 100);
+	}
+
+	componentDidUpdate(): void {
+		if(!this.state.scrolling) {
+			this.scrollToBottom();
+		}
 	}
 
 	componentWillUnmount(): void {
@@ -96,14 +170,18 @@ class Terminal extends React.Component<{}, TerminalState> {
 	render(): JSX.Element {
 		return (
 			<div className="app-terminal">
-				<SimpleBar className="app-terminal__scroll-bar">
+				<SimpleBar scrollableNodeProps={{ ref: this.scrollableRef }} className="app-terminal__scroll-bar">
 					<div ref={this.outputRef} className="app-terminal__output">
 						{this.state.output.map((line: string | null, index: number) =>
-							<div key={index}>
+							<span key={index}>
 								{line === null ? ' ' : ANSI.format(escape(line))}
-							</div>
+							</span>
 						)}
-						<Input isError={this.state.isError} isFocused={true} isLocked={false} onExecute={this.onExecute}/>
+						<Input
+							hidden={false}
+							execute={this.execute}
+							scrollToBottom={this.scrollToBottom}
+						/>
 					</div>
 				</SimpleBar>
 			</div>

@@ -1,11 +1,9 @@
 import React from 'react';
-import c from 'ansi-colors';
 
 interface InputProps {
-	isError: boolean;
-	isFocused: boolean;
-	isLocked: boolean;
-	onExecute: (value: string, output: string) => void;
+	hidden: boolean;
+	execute: (value: string) => void;
+	scrollToBottom: () => void;
 }
 
 interface InputState {
@@ -62,8 +60,13 @@ class Input extends React.Component<InputProps, InputState> {
 
 				commandHistory[0] = value;
 				commandHistoryIndex = 0;
-			} else if(key === 'Escape') {
 
+				this.props.scrollToBottom();
+			} else if(key === 'Escape') {
+				commandHistory[0] = value = '';
+				commandHistoryIndex = 0;
+
+				this.props.scrollToBottom();
 			} else if(key === 'ArrowUp') {
 				const mappedCommandHistory = commandHistory
 					.map((value: string, index: number) => ({ value, index }))
@@ -91,15 +94,7 @@ class Input extends React.Component<InputProps, InputState> {
 					value = commandHistory[commandHistoryIndex = command.index];
 				}
 			} else if(key === 'Enter') {
-				let prefix = c.bold('→');
-
-				if(this.props.isError) {
-					prefix = c.red(prefix);
-				} else {
-					prefix = c.green(prefix);
-				}
-
-				this.props.onExecute(value, `${prefix} ${value}`);
+				this.props.execute(value);
 
 				if(value.length) {
 					commandHistory[0] = value;
@@ -113,6 +108,8 @@ class Input extends React.Component<InputProps, InputState> {
 				value += key;
 				commandHistory[0] = value;
 				commandHistoryIndex = 0;
+
+				this.props.scrollToBottom();
 			}
 		}
 
@@ -132,24 +129,23 @@ class Input extends React.Component<InputProps, InputState> {
 		window.removeEventListener('keydown', this.onType);
 	}
 
-	render(): JSX.Element {
+	render(): JSX.Element | null {
+		if(this.props.hidden) {
+			return null;
+		}
+
 		return (
-			<div className="app-terminal__input">
-				<span className={[
-					'app-terminal--bold',
-					this.props.isError ? 'app-terminal--fg-red' : 'app-terminal--fg-green',
-				].join(' ')}>&rarr;</span>
-				<span>&nbsp;</span>
-				<span ref={this.valueRef}>{this.state.value}</span>
-				{this.props.isFocused &&
+			<span className="app-terminal__input">
+				<span ref={this.valueRef}>
+					{this.state.value}
 					<span ref={this.cursorRef} className={[
 						'app-terminal--blink',
 						'app-terminal--inverse',
 						'app-terminal--bg-reset',
 					].join(' ')}>&nbsp;</span>
-				}
+				</span>
 				<input ref={this.inputRef} type="text" style={{ display: 'none' }}/>
-			</div>
+			</span>
 		);
 	}
 }
