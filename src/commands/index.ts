@@ -3,6 +3,8 @@ import { help } from './help';
 import { contact } from './contact';
 import { neofetch } from './neofetch';
 import { clear } from './clear';
+import { github } from './github';
+import { repo } from './repo';
 
 export interface CommandUtils {
 	clear: () => void;
@@ -19,6 +21,8 @@ const commands: {
 	contact,
 	neofetch,
 	clear,
+	github,
+	repo,
 }
 
 export default commands;
