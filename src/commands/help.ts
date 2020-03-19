@@ -9,7 +9,7 @@ export function help(_: string, { printLine }: CommandUtils): void {
 		c.reset('  clear\t\tClear the terminal output.'),
 		c.reset('  neofetch\tDisplay information about the system.'),
 		c.reset('  echo\t\tPrint to the terminal the arguments.'),
-		c.reset('  github\tOpen a new tab to my GitHub.'),
+		c.reset('  github\tOpen a new tab to my GitHub profile.'),
 		c.reset('  repo\t\tOpen a new tab to the Git repository.'),
 	);
 }

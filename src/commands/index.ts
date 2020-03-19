@@ -5,6 +5,7 @@ import { neofetch } from './neofetch';
 import { clear } from './clear';
 import { github } from './github';
 import { repo } from './repo';
+import { giphy } from './giphy';
 
 export interface CommandUtils {
 	clear: () => void;
@@ -23,6 +24,7 @@ const commands: {
 	clear,
 	github,
 	repo,
+	giphy,
 }
 
 export default commands;
