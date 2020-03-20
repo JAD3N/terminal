@@ -1,5 +1,7 @@
-import { CommandUtils } from './index';
+import axios, { AxiosResponse } from 'axios';
 import c from 'ansi-colors';
+
+import { CommandUtils } from './index';
 
 function isEmail(str: string): boolean {
 	return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(str);
@@ -41,7 +43,7 @@ async function readField(
 	return value;
 }
 
-export async function contact(args: string, { print, readLine }: CommandUtils): Promise<void> {
+export async function contact(args: string, { print, printLine, readLine }: CommandUtils): Promise<void> {
 	const name = await readField(print, readLine, 'Name', true);
 	const email = await readField(print, readLine, 'Email', true, 'email');
 	const phone = await readField(print, readLine, 'Phone', false);
@@ -50,31 +52,23 @@ export async function contact(args: string, { print, readLine }: CommandUtils): 
 	print('\n');
 
 	async function submit(): Promise<void> {
-		const result = await fetch('https://google.com', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				name,
-				email,
-				phone,
-				message,
-			}),
+		await axios.post('/contact', {
+			name,
+			email,
+			phone,
+			message,
 		})
-			.then(() => true)
-			.catch(() => false);
-
-		if(result) {
-			print(c.bold.green('Your enquiry has been submitted.\n'));
-		} else {
+		.then(() => printLine(c.bold.green('Your enquiry has been submitted.')))
+		.catch(async () => {
 			print(c.bold.red('Failed to send submission. Do you want to retry (Y\\n)? '));
 
 			const willRetry = (await readLine()).toLowerCase();
 
 			// by default retry / only check for no
-			if(willRetry !== 'n') {
+			if(willRetry !== 'n' && willRetry !== 'no') {
 				await submit();
 			}
-		}
+		});
 	}
 
 	await submit();

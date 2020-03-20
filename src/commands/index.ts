@@ -6,6 +6,7 @@ import { clear } from './clear';
 import { github } from './github';
 import { repo } from './repo';
 import { giphy } from './giphy';
+import { dadjoke } from './dadjoke';
 
 export interface CommandUtils {
 	clear: () => void;
@@ -25,6 +26,7 @@ const commands: {
 	github,
 	repo,
 	giphy,
+	dadjoke,
 }
 
 export default commands;
