@@ -8,17 +8,17 @@ import escape from '../../utils/escape';
 import commands from '../../commands';
 
 interface TerminalState {
-	scrolling: boolean;
 	output: Array<string>;
 }
 
 const PREFIX = '\n→';
 
-class Terminal extends React.Component<{}, TerminalState> {
+class Terminal extends React.PureComponent<{}, TerminalState> {
 	outputRef: React.RefObject<HTMLDivElement>;
-	scrollableRef: React.RefObject<Element>;
+	scrollableRef: React.RefObject<HTMLDivElement>;
 
 	interval: number;
+	isScrolling: boolean;
 	isVisible: boolean;
 	isLocked: boolean;
 	listeners: Array<(str: string) => void>;
@@ -26,10 +26,7 @@ class Terminal extends React.Component<{}, TerminalState> {
 	constructor(props: {}) {
 		super(props);
 
-		this.state = {
-			scrolling: false,
-			output: [],
-		};
+		this.state = { output: [] };
 
 		// do after assigning state
 		this.state.output.push(this.getPrefix());
@@ -38,17 +35,32 @@ class Terminal extends React.Component<{}, TerminalState> {
 		this.scrollableRef = React.createRef();
 
 		this.interval = -1;
+		this.isScrolling = false;
 		this.isVisible = true;
 		this.isLocked = false;
 		this.listeners = [];
 
+		// used for command utils
 		this.clear = this.clear.bind(this);
 		this.print = this.print.bind(this);
 		this.printLine = this.printLine.bind(this);
 		this.readLine = this.readLine.bind(this);
 
+		// used for components
 		this.execute = this.execute.bind(this);
 		this.scrollToBottom = this.scrollToBottom.bind(this);
+
+		// used for listeners
+		this.onScroll = this.onScroll.bind(this);
+	}
+
+	onScroll(event: Event): void {
+		if(!this.scrollableRef.current) {
+			return;
+		}
+
+		const el = this.scrollableRef.current;
+		this.isScrolling = el.scrollHeight - el.scrollTop !== el.clientHeight;
 	}
 
 	getPrefix(error = false): string {
@@ -61,17 +73,7 @@ class Terminal extends React.Component<{}, TerminalState> {
 	}
 
 	print(...strArr: Array<string>): void {
-		let scrolling = false;
-
-		if(this.scrollableRef.current) {
-			const el = this.scrollableRef.current;
-			scrolling = el.scrollHeight - el.scrollTop !== el.clientHeight;
-		}
-
-		this.setState({ scrolling, output: [
-			...this.state.output,
-			...strArr,
-		] });
+		this.setState((state: TerminalState) => ({ output: [ ...state.output, ...strArr ] }));
 	}
 
 	printLine(...strArr: Array<string>): void {
@@ -131,6 +133,7 @@ class Terminal extends React.Component<{}, TerminalState> {
 		const el = this.scrollableRef.current;
 		if(el) {
 			el.scrollTop = el.scrollHeight;
+			this.isScrolling = false;
 		}
 	}
 
@@ -154,17 +157,25 @@ class Terminal extends React.Component<{}, TerminalState> {
 			}
 		}, 600);
 
-		setTimeout(() => this.execute('neofetch'), 100);
+		setTimeout(() => {
+			this.execute('neofetch');
+		}, 100);
+
+		window.addEventListener('resize', this.scrollToBottom);
 	}
 
 	componentDidUpdate(): void {
-		if(!this.state.scrolling) {
+		if(!this.isScrolling) {
 			this.scrollToBottom();
 		}
 	}
 
 	componentWillUnmount(): void {
 		window.clearInterval(this.interval);
+		window.removeEventListener('resize', this.scrollToBottom);
+
+		// remove scroll event listener
+		this.scrollableRef.current?.removeEventListener('scroll', this.onScroll);
 	}
 
 	render(): JSX.Element {

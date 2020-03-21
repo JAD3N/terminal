@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import c from 'ansi-colors';
 
 import { CommandUtils } from './index';

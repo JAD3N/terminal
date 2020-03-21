@@ -10,44 +10,66 @@ function getAge(): number {
 	return Math.floor(diff / 31557600000);
 }
 
-export function neofetch(args: string, { printLine }: CommandUtils): void {
-	const letterJ = [
-		'          JJJJJJJJJJJ',
-		'          J:::::::::J',
-		'          J:::::::::J',
-		'          JJ:::::::JJ',
-		'            J:::::J  ',
-		'            J:::::J  ',
-		'            J:::::J  ',
-		'            J:::::j  ',
-		'            J:::::J  ',
-		'JJJJJJJ     J:::::J  ',
-		'J:::::J     J:::::J  ',
-		'J::::::J   J::::::J  ',
-		'J:::::::JJJ:::::::J  ',
-		' JJ:::::::::::::JJ   ',
-		'   JJ:::::::::JJ     ',
-		'     JJJJJJJJJ       ',
-	];
+export function neofetch(args: string, { printLine }: CommandUtils): Promise<void> {
+	let letterJ, letterB;
 
-	const letterB = [
-		'BBBBBBBBBBBBBBBBB   ',
-		'B::::::::::::::::B  ',
-		'B::::::BBBBBB:::::B ',
-		'BB:::::B     B:::::B',
-		'  B::::B     B:::::B',
-		'  B::::B     B:::::B',
-		'  B::::BBBBBB:::::B ',
-		'  B:::::::::::::BB  ',
-		'  B::::BBBBBB:::::B ',
-		'  B::::B     B:::::B',
-		'  B::::B     B:::::B',
-		'  B::::B     B:::::B',
-		'BB:::::BBBBBB::::::B',
-		'B:::::::::::::::::B ',
-		'B::::::::::::::::B  ',
-		'BBBBBBBBBBBBBBBBB   ',
-	];
+	if(window.innerWidth < 800) {
+		letterJ = [
+			'       __ ',
+			'      |  |',
+			'      |  |',
+			'.--.  |  |',
+			'|  `--\'  |',
+			' \\______/ ',
+		];
+
+		letterB = [
+			'.______  ',
+			'|   _  \\ ',
+			'|  |_)  |',
+			'|   _  < ',
+			'|  |_)  |',
+			'|______/ ',
+		];
+	} else {
+		letterJ = [
+			'          JJJJJJJJJJJ',
+			'          J:::::::::J',
+			'          J:::::::::J',
+			'          JJ:::::::JJ',
+			'            J:::::J  ',
+			'            J:::::J  ',
+			'            J:::::J  ',
+			'            J:::::j  ',
+			'            J:::::J  ',
+			'JJJJJJJ     J:::::J  ',
+			'J:::::J     J:::::J  ',
+			'J::::::J   J::::::J  ',
+			'J:::::::JJJ:::::::J  ',
+			' JJ:::::::::::::JJ   ',
+			'   JJ:::::::::JJ     ',
+			'     JJJJJJJJJ       ',
+		];
+
+		letterB = [
+			'BBBBBBBBBBBBBBBBB   ',
+			'B::::::::::::::::B  ',
+			'B::::::BBBBBB:::::B ',
+			'BB:::::B     B:::::B',
+			'  B::::B     B:::::B',
+			'  B::::B     B:::::B',
+			'  B::::BBBBBB:::::B ',
+			'  B:::::::::::::BB  ',
+			'  B::::BBBBBB:::::B ',
+			'  B::::B     B:::::B',
+			'  B::::B     B:::::B',
+			'  B::::B     B:::::B',
+			'BB:::::BBBBBB::::::B',
+			'B:::::::::::::::::B ',
+			'B::::::::::::::::B  ',
+			'BBBBBBBBBBBBBBBBB   ',
+		];
+	}
 
 	const info = [
 		'',
@@ -69,7 +91,33 @@ export function neofetch(args: string, { printLine }: CommandUtils): void {
 		'',
 	];
 
-	for(let i = 0; i < letterJ.length; i++) {
-		printLine(c.bold(c.blue(letterJ[i]) + ' ' + c.green(letterB[i])) + '     ' + info[i]);
+	const lines: Array<string> = [];
+
+	if(window.innerWidth < 800) {
+		for(let i = 0; i < 6; i++) {
+			lines.push(c.bold(c.blue(letterJ[i]) + ' ' + c.green(letterB[i])));
+		}
+
+		lines.push('\n');
+
+		for(let i = 3; i < 13; i++) {
+			lines.push(info[i]);
+		}
+	} else {
+		for(let i = 0; i < 16; i++) {
+			lines.push(c.bold(c.blue(letterJ[i]) + ' ' + c.green(letterB[i])) + '     ' + info[i]);
+		}
 	}
+
+	return new Promise((resolve: () => void) => {
+		let i = 0;
+		const interval = setInterval(function() {
+			printLine(lines[i++]);
+
+			if(i >= lines.length) {
+				clearInterval(interval);
+				resolve();
+			}
+		}, 25);
+	});
 }

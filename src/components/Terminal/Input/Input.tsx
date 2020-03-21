@@ -10,6 +10,16 @@ interface InputState {
 	value: string;
 	commandHistory: Array<string>;
 	commandHistoryIndex: number;
+	isFocused: boolean;
+}
+
+function isTouchDevice(): boolean {
+	try {
+		document.createElement('TouchEvent');
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 class Input extends React.Component<InputProps, InputState> {
@@ -22,8 +32,9 @@ class Input extends React.Component<InputProps, InputState> {
 
 		this.state = {
 			value: '',
-			commandHistory: [''],
+			commandHistory: [ '', 'neofetch' ],
 			commandHistoryIndex: 0,
+			isFocused: false,
 		};
 
 		this.valueRef = React.createRef<HTMLSpanElement>();
@@ -31,6 +42,31 @@ class Input extends React.Component<InputProps, InputState> {
 		this.inputRef = React.createRef<HTMLInputElement>();
 
 		this.onType = this.onType.bind(this);
+		this.onWindowClick = this.onWindowClick.bind(this);
+		this.onInputChange = this.onInputChange.bind(this);
+	}
+
+	onWindowClick(event: MouseEvent): void {
+		if(isTouchDevice()) {
+			event.preventDefault();
+
+			if(!this.state.isFocused) {
+				this.inputRef.current?.focus();
+				this.setState({ isFocused: true });
+			} else {
+				this.inputRef.current?.blur();
+				this.setState({ isFocused: false });
+			}
+		}
+	}
+
+	onInputChange(event: React.FormEvent<HTMLInputElement>): void {
+		event.preventDefault();
+
+		const input = event.currentTarget;
+		const value = input.value;
+
+		this.setState({ value: value });
 	}
 
 	onType(event: KeyboardEvent): void {
@@ -48,25 +84,22 @@ class Input extends React.Component<InputProps, InputState> {
 			'CapsLock', 'ScrollLock', 'Pause', 'Insert', 'Home',
 			'PageUp', 'Delete', 'End', 'PageDown',
 			'ArrowLeft', 'ArrowRight',
+			'Unidentified',
 		];
 
 		const { key, ctrlKey, altKey } = event;
 
 		if(!blacklist.includes(key) && !ctrlKey && !altKey) {
-			event.preventDefault();
+			// event.preventDefault();
 
 			if(key === 'Backspace') {
 				value = value.slice(0, -1);
 
 				commandHistory[0] = value;
 				commandHistoryIndex = 0;
-
-				this.props.scrollToBottom();
 			} else if(key === 'Escape') {
 				commandHistory[0] = value = '';
 				commandHistoryIndex = 0;
-
-				this.props.scrollToBottom();
 			} else if(key === 'ArrowUp') {
 				const mappedCommandHistory = commandHistory
 					.map((value: string, index: number) => ({ value, index }))
@@ -94,6 +127,10 @@ class Input extends React.Component<InputProps, InputState> {
 					value = commandHistory[commandHistoryIndex = command.index];
 				}
 			} else if(key === 'Enter') {
+				if(this.inputRef.current !== null) {
+					this.inputRef.current.value = '';
+				}
+
 				this.props.execute(value);
 
 				if(value.length) {
@@ -108,8 +145,6 @@ class Input extends React.Component<InputProps, InputState> {
 				value += key;
 				commandHistory[0] = value;
 				commandHistoryIndex = 0;
-
-				this.props.scrollToBottom();
 			}
 		}
 
@@ -123,10 +158,16 @@ class Input extends React.Component<InputProps, InputState> {
 
 	componentDidMount(): void {
 		window.addEventListener('keydown', this.onType);
+		window.addEventListener('click', this.onWindowClick);
+	}
+
+	componentDidUpdate(): void {
+		this.props.scrollToBottom();
 	}
 
 	componentWillUnmount(): void {
 		window.removeEventListener('keydown', this.onType);
+		window.removeEventListener('click', this.onWindowClick);
 	}
 
 	render(): JSX.Element | null {
@@ -144,7 +185,14 @@ class Input extends React.Component<InputProps, InputState> {
 						'app-terminal--bg-reset',
 					].join(' ')}>&nbsp;</span>
 				</span>
-				<input ref={this.inputRef} type="text" style={{ display: 'none' }}/>
+				<input
+					ref={this.inputRef}
+					onChange={this.onInputChange.bind(this)}
+					type="text"
+					autoCorrect="off"
+					autoCapitalize="off"
+					autoComplete="off"
+				/>
 			</span>
 		);
 	}

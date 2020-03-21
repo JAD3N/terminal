@@ -3,35 +3,36 @@ import React from 'react';
 interface WindowState {
 	title: string;
 	isFullscreen: boolean;
+	isFocused: boolean;
 }
 
-class Window extends React.Component<{}, WindowState> {
-
-	state = {
-		title: 'JADEN.BIO | React Terminal',
-		isFullscreen: false,
-	};
-
+class Window extends React.PureComponent<{}, WindowState> {
 	constructor(props: {}) {
 		super(props);
 
-		this.onClose = this.onClose.bind(this);
-		this.onMinimize = this.onMinimize.bind(this);
-		this.onFullscreen = this.onFullscreen.bind(this);
+		this.state = {
+			title: 'JADEN.BIO | React Terminal',
+			isFullscreen: false,
+			isFocused: true,
+		};
+
+		this.close = this.close.bind(this);
+		this.minimize = this.minimize.bind(this);
+		this.toggleFullscreen = this.toggleFullscreen.bind(this);
 	}
 
-	onClose(): void {
+	close(): void {
 		// go back because you can't close tabs
 		window.history.back();
 	}
 
-	onMinimize(): void {
+	minimize(): void {
 		// TODO: Add a better explanation.
 		alert('This functionality is not supported.');
 	}
 
-	onFullscreen(): void {
-		this.setState({ isFullscreen: !this.state.isFullscreen });
+	toggleFullscreen(): void {
+		this.setState((state: WindowState) => ({ isFullscreen: !state.isFullscreen }));
 	}
 
 	render(): JSX.Element {
@@ -45,15 +46,13 @@ class Window extends React.Component<{}, WindowState> {
 			<div className={classes.join(' ')}>
 				<div className="app-window__header">
 					<div className="app-window__controls">
-						<button onClick={this.onClose} title="Close" className="app-window__controls-btn app-window__controls--red"></button>
-						<button onClick={this.onMinimize} title="Minimize" className="app-window__controls-btn app-window__controls--orange"></button>
-						<button onClick={this.onFullscreen} className="app-window__controls-btn app-window__controls--green"></button>
+						<button onClick={this.close} title="Close" className="app-window__controls-btn app-window__controls--red"></button>
+						<button onClick={this.minimize} title="Minimize" className="app-window__controls-btn app-window__controls--orange"></button>
+						<button onClick={this.toggleFullscreen} className="app-window__controls-btn app-window__controls--green"></button>
 					</div>
 					<span className="app-window__title">{this.state.title}</span>
 				</div>
-				<div className="app-window__body">
-					{this.props.children}
-				</div>
+				<div className="app-window__body">{this.props.children}</div>
 			</div>
 		);
 	}
