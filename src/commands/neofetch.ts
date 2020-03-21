@@ -74,7 +74,6 @@ export function neofetch(args: string, { printLine }: CommandUtils): Promise<voi
 	const info = [
 		'',
 		'',
-		'',
 		c.bold.red('OS: ') + c.reset('JADEN.BIO'),
 		c.bold.red('Kernel: ') + c.reset('JavaScript'),
 		c.bold.red('Shell: ') + c.reset('React'),
@@ -86,7 +85,7 @@ export function neofetch(args: string, { printLine }: CommandUtils): Promise<voi
 		c.bold.red('Likes: ') + c.reset('Rust, React, TypeScript...'),
 		'',
 		c.white('Wanna get in touch? Type: ') + c.yellow.underline.bold('contact'),
-		'',
+		c.magenta('Type ') + c.yellow.underline.bold('help') + c.magenta(' for more commands!'),
 		'',
 		'',
 	];
@@ -100,7 +99,7 @@ export function neofetch(args: string, { printLine }: CommandUtils): Promise<voi
 
 		lines.push('\n');
 
-		for(let i = 3; i < 13; i++) {
+		for(let i = 2; i < 14; i++) {
 			lines.push(info[i]);
 		}
 	} else {

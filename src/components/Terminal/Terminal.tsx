@@ -54,7 +54,7 @@ class Terminal extends React.PureComponent<{}, TerminalState> {
 		this.onScroll = this.onScroll.bind(this);
 	}
 
-	onScroll(event: Event): void {
+	onScroll(): void {
 		if(!this.scrollableRef.current) {
 			return;
 		}

@@ -11,5 +11,7 @@ export function help(_: string, { printLine }: CommandUtils): void {
 		c.reset('  echo\t\tPrint to the terminal the arguments.'),
 		c.reset('  github\tOpen a new tab to my GitHub profile.'),
 		c.reset('  repo\t\tOpen a new tab to the Git repository.'),
+		c.reset('  dadjoke\tFind a random dad joke.'),
+		c.reset('  giphy\t\tFind a random gif.'),
 	);
 }
