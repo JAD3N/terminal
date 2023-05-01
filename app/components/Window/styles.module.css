@@ -1,0 +1,77 @@
+.window {
+	display: flex;
+	flex-direction: column;
+	width: 90%;
+	max-width: 900px;
+	height: 550px;
+	transition: all 0.15s;
+	background: var(--window-bg);
+	color: var(--window-fg);
+	border-radius: 6px;
+	box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
+}
+
+.window[data-fullscreen="true"] {
+	width: 100%;
+	height: 100%;
+	max-width: 100%;
+	border-radius: 0;
+}
+
+.header {
+	position: relative;
+	padding: 0 var(--window-padding);
+	height: 40px;
+	display: flex;
+	align-items: center;
+}
+
+.title {
+	display: block;
+	width: 100%;
+	text-align: center;
+	font-size: 0.75rem;
+	color: var(--window-title-color);
+}
+
+.controls {
+	position: absolute;
+	left: var(--window-padding);
+	display: flex;
+}
+
+.button {
+	cursor: pointer;
+	outline: 0;
+	border: 0;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	margin: 0 6px 0 0;
+	padding: 0;
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.button::-moz-focus-inner {
+	outline: 0 !important;
+	border: 0 !important;
+}
+
+.button[data-variant="red"] {
+	background-color: var(--window-control-red);
+}
+
+.button[data-variant="orange"] {
+	background-color: var(--window-control-orange);
+}
+
+.button[data-variant="green"] {
+	background-color: var(--window-control-green);
+}
+
+.body {
+	height: calc(100% - 40px);
+	overflow: hidden;
+}

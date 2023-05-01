@@ -1,0 +1,30 @@
+body {
+	margin: 0;
+	font-size: 16px;
+	font-family: "Fira Code", monospace, sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow: hidden;
+
+	--bg: #fcfafc;
+
+	--terminal-red: #e06c75;
+	--terminal-green: #98c379;
+	--terminal-blue: #56b6c2;
+	--terminal-pink: #c678dd;
+	--terminal-cyan: #56b6c2;
+	--terminal-light-gray: #d0d0d0;
+	--terminal-medium-gray: #808080;
+	--terminal-white: #ffffff;
+	--terminal-fg: #abb2bf;
+	--terminal-bg: #282c34;
+
+	--window-title-color: #ffffff;
+	--window-bg: var(--terminal-bg);
+	--window-fg: var(--terminal-fg);
+
+	--window-padding: 12px;
+	--window-control-green: #45c547;
+	--window-control-orange: #ff9f0a;
+	--window-control-red: #ff443a;
+}
